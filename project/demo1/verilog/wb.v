@@ -4,8 +4,10 @@
    Filename        : wb.v
    Description     : This is the module for the overall Write Back stage of the processor.
 */
-module wb (/* TODO: Add appropriate inputs/outputs for your WB stage here*/);
+module wb (MemData, ALUData, PCData, WriteDataMem, WriteDataPC, writeData);
+    input [15:0] MemData, ALUData, PCData;
+    input WriteDataMem, WriteDataPC;
+    output [15:0] writeData;
 
-   // TODO: Your code here
-   
+    assign writeData = (WriteDataPC) ? PCData : ((WriteDataMem) ? MemData : ALUData);
 endmodule

@@ -23,6 +23,23 @@ module proc (/*AUTOARG*/
    
    
    /* your code here -- should include instantiations of fetch, decode, execute, mem and wb modules */
-   
+    wire Halt, MemRead, MemWrite, ALUInB, WriteDataMem, WriteDataPC;
+    wire decodeErr, executeErr;
+    wire [3:0] ALUControl;
+    wire [15:0] ins, PC, regData1, regData2, imm, ALUOut, MemOut, PC_2, regWdata;
+
+    assign err = decodeErr | executeErr;
+
+    fetch fetch(.halt(Halt), .updatedPC(PC), .ins(ins), .clk(clk), .rst(rst), .PC_2(PC_2));
+    decode decode(.ins(ins), .wdata(regWdata), .r1data(regData1), .r2data(regData2), .immediate(imm), 
+        .MemRead(MemRead), .MemWrite(MemWrite), .ALUInB(ALUInB), .ALUControl(ALUControl), 
+        .WriteDataMem(WriteDataMem), .WriteDataPC(WriteDataPC),
+        .clk(clk), .rst(rst), .err(decodeErr), .nextPC(PC), .Halt(Halt), .PC_2(PC_2));
+    execute execute(.data1(regData1), .data2(regData2), .immediate(imm), .ALUControl(ALUControl), 
+        .rtControl(ALUInB), .err(executeErr), .out(ALUOut));
+    memory memory(.rdata(MemOut), .wdata(regData2), .addr(ALUOut), .MemWrite(MemWrite), .MemRead(MemRead), 
+        .createdump(Halt), .clk(clk), .rst(rst));
+    wb wb(.MemData(MemOut), .ALUData(ALUOut), .PCData(PC), .WriteDataMem(WriteDataMem), .WriteDataPC(WriteDataPC), .writeData(regWdata));
+
 endmodule // proc
 // DUMMY LINE FOR REV CONTROL :0:
