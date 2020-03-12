@@ -37,26 +37,31 @@ module alu (InA, InB, Op, Out, err);
 
     wire [N-1:0] shift, add, A, B;
     wire zero;
-    wire reg sub;
+    wire sub;
+    wire slt;
+    reg subA, subB;
 
-    assign B = (sub) ? ~InB : InB;
+    assign A = (subA) ? ~InA : InA;
+    assign B = (subB) ? ~InB : InB;
+    assign sub = subA | subB;
+    assign slt = (InA[15] == InB[15]) ? add[15] : InA[15];
 
-    cla_16b cla(.A(InA), .B(B), .C_in(sub), .S(add), .C_out(cout));
-    shifter sf(.In(InA), .Cnt(B[3:0]), .Op(Op[1:0]), .Out(shift));
+    cla_16b cla(.A(A), .B(B), .C_in(sub), .S(add), .C_out(cout));
+    shifter sf(.In(A), .Cnt(B[3:0]), .Op(Op[1:0]), .Out(shift));
 
-    assign zero = ~|Out;
+    assign zero = ~|add;
 
     always @* begin
-        err = 0; Out = 0; sub = 0;
+        err = 0; Out = 0; subA = 0; subB = 0;
         casex (Op)
             ADD : Out = add; 
-            SUB : Out = begin add; sub = 1; end
+            SUB : begin Out = add; subA = 1; end
             XOR : Out = A ^ B;
             ANDN: Out = A & ~B;
             SHFT: Out = shift;
-            SEQ : Out = begin zero; sub = 1; end
-            SLT : Out = begin Out[0]; sub = 1; end
-            SLE : Out = begin Out[0] | zero; sub = 1; end
+            SEQ : begin Out = zero; subB = 1; end
+            SLT : begin Out = slt; subB = 1; end
+            SLE : begin Out = slt | zero; subB = 1; end
             SCO : Out = cout;
             BTR : Out = {A[0],A[1],A[2],A[3],A[4],A[5],A[6],A[7],A[8],A[9],A[10],A[11],A[12],A[13],A[14],A[15]};
             LBI : Out = B;

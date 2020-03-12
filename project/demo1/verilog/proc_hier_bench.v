@@ -123,32 +123,34 @@ module proc_hier_bench();
 
    // Edit the example below. You must change the signal
    // names on the right hand side
+   wire [15:0] nextPC;
     
-   assign PC = DUT.p0.fetch0.pcCurrent;
-   assign Inst = DUT.p0.fetch0.instr;
+   assign PC = DUT.p0.fetch.addr;
+   assign nextPC = DUT.p0.nextPC;
+   assign Inst = DUT.p0.fetch.ins;
    
-   assign RegWrite = DUT.p0.decode0.regFile0.write;
+   assign RegWrite = DUT.p0.decode.RegWrite;
    // Is register being written, one bit signal (1 means yes, 0 means no)
    
-   assign WriteRegister = DUT.p0.decode0.regFile0.writeregsel;
+   assign WriteRegister = DUT.p0.decode.waddr;
    // The name of the register being written to. (3 bit signal)
 
-   assign WriteData = DUT.p0.decode0.regFile0.writedata;
+   assign WriteData = DUT.p0.decode.wdata;
    // Data being written to the register. (16 bits)
    
-   assign MemRead =  DUT.p0.memory0.memRead;
+   assign MemRead =  DUT.p0.memory.MemRead;
    // Is memory being read, one bit signal (1 means yes, 0 means no)
    
-   assign MemWrite = (DUT.p0.memory0.memReadorWrite & DUT.p0.memory0.memWrite);
+   assign MemWrite = (DUT.p0.memory.MemWrite);
    // Is memory being written to (1 bit signal)
    
-   assign MemAddress = DUT.p0.memory0.aluResult;
+   assign MemAddress = DUT.p0.memory.addr;
    // Address to access memory with (for both reads and writes to memory, 16 bits)
    
-   assign MemData = DUT.p0.memory0.writeData;
+   assign MemData = DUT.p0.memory.wdata;
    // Data to be written to memory for memory writes (16 bits)
    
-   assign Halt = DUT.p0.memory0.halt;
+   assign Halt = DUT.p0.Halt;
    // Is processor halted (1 bit signal)
    
    /* Add anything else you want here */
