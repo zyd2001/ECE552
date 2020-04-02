@@ -1,0 +1,7 @@
+0000 c1ff lbi r1, 255
+0002 8942 ld r2, r1, 2
+0004 da4c add r3, r2, r2
+0006 db70 add r4, r3, r3
+0008 8963 ld r3, r1, 3
+000a 8163 st r3, r1, 3
+000c 0000 halt
