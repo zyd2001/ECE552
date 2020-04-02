@@ -151,7 +151,7 @@ module proc_hier_pbench();
    assign MemDataIn = DUT.p0.MEM_data2;
    // Data to be written to memory for memory writes (16 bits)
    
-   assign MemDataOut = DUT.p0.MEM_MemOut;
+   assign MemDataOut = DUT.p0.MEM.rdata;
    // Data read from memory for memory reads (16 bits)
 
    // new added 05/03

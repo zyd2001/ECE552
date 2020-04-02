@@ -21,7 +21,7 @@ module decode (ins, wdata, regw, waddr, r1data, r2data, immediate, MemRead, MemW
     output MemRead, MemWrite, ALUInB, WriteDataMem, WriteDataPC, RegWrite, Halt, branch; // control signals from control unit
     output err;
 
-    wire [15:0] immD, AddPCInA, AddPCInB, AddPCOut, r1d;
+    wire [15:0] immD, AddPCInA, AddPCInB, r1d;
     wire [2:0] r1addr, r2addr;
     wire [1:0] waddrM; // selection inputs for 4 to 1 mux for reg write addr
     wire regErr, controlErr;

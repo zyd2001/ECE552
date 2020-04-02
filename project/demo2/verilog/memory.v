@@ -5,15 +5,18 @@
    Description     : This module contains all components in the Memory stage of the 
                      processor.
 */
-module memory (rdata, wdata, addr, MemWrite, MemRead, createdump, clk, rst);
+module memory (out, wdata, ALUData, MemWrite, MemRead, PCData, WriteDataPC, WriteDataMem, createdump, clk, rst);
     input clk, rst;
-    input MemWrite, MemRead, createdump; // control signal
-    input [15:0] rdata, wdata, addr;
+    input MemWrite, MemRead, createdump, WriteDataPC, WriteDataMem; // control signal
+    input [15:0] out, wdata, ALUData, PCData;
     
     wire enable;
+    wire [15:0] rdata;
+
+    assign out = (WriteDataPC) ? PCData : ((WriteDataMem) ? rdata : ALUData);
 
     assign enable = MemRead | MemWrite;
 
-    memory2c mem(.data_out(rdata), .data_in(wdata), .addr(addr), .enable(enable), .wr(MemWrite), 
+    memory2c mem(.data_out(rdata), .data_in(wdata), .addr(ALUData), .enable(enable), .wr(MemWrite), 
         .createdump(createdump), .clk(clk), .rst(rst));
 endmodule

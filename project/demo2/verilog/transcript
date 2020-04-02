@@ -1,5 +1,5 @@
 # vsim -c proc_hier_pbench -lib __work 
-# Start time: 01:12:43 on Apr 02,2020
+# Start time: 12:58:03 on Apr 02,2020
 # //  ModelSim DE 10.7c Aug 17 2018Linux 4.15.0-91-generic
 # //
 # //  Copyright 1991-2018 Mentor Graphics Corporation
@@ -33,7 +33,6 @@
 # Loading __work.shift_left
 # Loading __work.shift_right
 # Loading __work.memory
-# Loading __work.wb
 # Loading __work.fullAdder_1b
 # Loading __work.reg16
 # Loading __work.dffe
@@ -41,6 +40,6 @@ run -all
 # Hello world...simulation starting
 # See verilogsim.log and verilogsim.ptrace for output
 # ** Note: $finish    : proc_hier_pbench.v(115)
-#    Time: 1505 ns  Iteration: 0  Instance: /proc_hier_pbench
-# End time: 01:12:43 on Apr 02,2020, Elapsed time: 0:00:00
+#    Time: 15005 ns  Iteration: 0  Instance: /proc_hier_pbench
+# End time: 12:58:04 on Apr 02,2020, Elapsed time: 0:00:01
 # Errors: 0, Warnings: 0
