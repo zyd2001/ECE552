@@ -12,7 +12,7 @@ module fetch (halt, updatedPC, ins, clk, rst, PC_2, branch, stall);
 
     wire [15:0] addr, newPC, i;
 
-    assign newPC = (stall) ? addr : ((branch) ? updatedPC : PC_2); // if stall, don't update PC
+    assign newPC = (stall | halt) ? addr : ((branch) ? updatedPC : PC_2); // if stall, don't update PC
     assign ins = (halt) ? 16'h0000 : ((branch) ? 16'h0800 : i); // if halt repeat halt, flush the ins if branch
 
     cla_16b add_PC(.A(addr), .B(16'h2), .C_in(1'b0), .S(PC_2), .C_out());

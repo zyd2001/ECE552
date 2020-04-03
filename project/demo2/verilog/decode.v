@@ -6,7 +6,7 @@
 */
 module decode (ins, wdata, regw, waddr, r1data, r2data, immediate, MemRead, MemWrite, ALUInB, ALUControl, 
     WriteDataMem, WriteDataPC, RegWrite, RegWriteAddr, clk, rst, err, nextPC, Halt, PC_2, branch, 
-    stall, EX_ID_forward, EX_ID_forward_data);
+    stall, EX_ID_forward, EX_ID_forward_data, MW, jmux1, r1addr, r2addr);
     input clk, rst;
     input regw;
     input stall, EX_ID_forward;
@@ -17,18 +17,18 @@ module decode (ins, wdata, regw, waddr, r1data, r2data, immediate, MemRead, MemW
     output [15:0] r1data, r2data, immediate;
     output [15:0] nextPC;
     output [3:0] ALUControl;
-    output [2:0] RegWriteAddr;
-    output MemRead, MemWrite, ALUInB, WriteDataMem, WriteDataPC, RegWrite, Halt, branch; // control signals from control unit
+    output [2:0] RegWriteAddr, r1addr, r2addr;
+    output MemRead, MemWrite, ALUInB, WriteDataMem, WriteDataPC, RegWrite, Halt, branch, MW, jmux1; // control signals from control unit
     output err;
 
     wire [15:0] immD, AddPCInA, AddPCInB, r1d;
-    wire [2:0] r1addr, r2addr;
+    // wire [2:0] r1addr, r2addr;
     wire [1:0] waddrM; // selection inputs for 4 to 1 mux for reg write addr
     wire regErr, controlErr;
     wire sign, short; // selection input for 2 to 1 mux to choose which immediate
-    wire jmp, br, jmux1, jmux2, zero; // selction inputs for 2 to 1 mux that control PC update (Jump, Branch)
+    wire jmp, br, jmux2, zero; // selction inputs for 2 to 1 mux that control PC update (Jump, Branch)
     wire valid, H; // prevent halt from reset
-    wire RW, MW, MR; // original MemRead, MemWrite, RegWrite signal
+    wire RW, MR; // original MemRead, MemWrite, RegWrite signal
     reg doBranch, branchErr;
 
     assign RegWrite = (stall) ? 1'b0 : RW;

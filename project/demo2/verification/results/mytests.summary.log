@@ -1,0 +1,4 @@
+/u/y/i/yidaz/private/cs552/project-team-16/project/demo2/verification/mytests/a.asm SUCCESS CPI:2.3 CYCLES:16 ICOUNT:7 IHITRATE: 100.0 DHITRATE: 100.0
+/u/y/i/yidaz/private/cs552/project-team-16/project/demo2/verification/mytests/b.asm SUCCESS CPI:3.5 CYCLES:14 ICOUNT:4 IHITRATE: 0 DHITRATE: 0
+/u/y/i/yidaz/private/cs552/project-team-16/project/demo2/verification/mytests/c.asm SUCCESS CPI:4.0 CYCLES:16 ICOUNT:4 IHITRATE: 100.0 DHITRATE: 100.0
+/u/y/i/yidaz/private/cs552/project-team-16/project/demo2/verification/mytests/d.asm SUCCESS CPI:2.5 CYCLES:20 ICOUNT:8 IHITRATE: 100.0 DHITRATE: 100.0
