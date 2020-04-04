@@ -117,7 +117,7 @@ module proc (/*AUTOARG*/
         .WriteDataMem(ID_WriteDataMem), .WriteDataPC(ID_WriteDataPC), .RegWrite(ID_RegWrite), .RegWriteAddr(ID_RegWriteAddr),
         .clk(clk), .rst(rst), .err(decodeErr), .nextPC(nextPC), .Halt(ID_Halt), .PC_2(ID_PC), 
         .r1addr(ID_r1addr), .r2addr(ID_r2addr), .MW(ID_MW), .jmux1(ID_jmux1),
-        .branch(branch), .stall(stall), .EX_ID_forward(EX_ID_forward), .EX_ID_forward_data((MEM_WriteDataPC) ? MEM_PC : MEM_ALUOut));
+        .branch(branch), .stall(stall), .EX_ID_forward(EX_ID_forward), .EX_ID_forward_data(MEM_ALUOut));
     execute EX(.data1(EX_data1), .data2(EX_data2), .immediate(EX_imm), .ALUControl(EX_ALUControl), 
         .rtControl(EX_ALUInB), .err(executeErr), .out(EX_ALUOut));
     memory MEM(.out(MEM_Out), .wdata(MEM_data2), .ALUData(MEM_ALUOut), .PCData(MEM_PC), .WriteDataPC(MEM_WriteDataPC), .WriteDataMem(MEM_WriteDataMem), 
