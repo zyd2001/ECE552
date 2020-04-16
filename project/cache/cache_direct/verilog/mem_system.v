@@ -41,15 +41,16 @@ module mem_system(/*AUTOARG*/
     wire MemErr, CacheErr;
     reg FSMErr;
     reg MemWr, MemRd;
-    reg done, comp, wb, latch, cHit;
+    reg done, comp, latch, cHit, write;
     reg [1:0] bank;
     reg [2:0] offset;
     reg [3:0] nstate;
+    reg [15:0] data_in;
     wire [4:0] tagOut;
     wire [3:0] state;
-    wire [2:0] Offset;
-    wire [15:0] MemAddr, data, MemOut, AddrLatch, DataInLatch, data_in;
-    wire WrLatch, RdLatch, write;
+    // wire [2:0] Offset;
+    wire [15:0] MemAddr, data, MemOut, AddrLatch, DataInLatch;
+    wire WrLatch, RdLatch;
 
    /* data_mem = 1, inst_mem = 0 *
     * needed for cache parameter */
@@ -68,7 +69,7 @@ module mem_system(/*AUTOARG*/
                           .createdump           (createdump),
                           .tag_in               (AddrLatch[15:11]),
                           .index                (AddrLatch[10:3]),
-                          .offset               (Offset),
+                          .offset               (offset),
                           .data_in              (data_in),
                           .comp                 (comp),
                           .write                (write),
@@ -109,14 +110,14 @@ module mem_system(/*AUTOARG*/
     assign READ = Action & ((trueMiss) | (invalidMiss) | (validNoWrite));
 
     assign MemAddr = {(MemWr) ? tagOut : AddrLatch[15:11], AddrLatch[10:3], bank, 1'b0};
-    assign Offset = (~comp | validWrite) ? offset : AddrLatch[2:0];
-    assign data_in = (wb) ? MemOut : DataInLatch;
+    // assign Offset = (~comp | validWrite) ? offset : AddrLatch[2:0];
+    // assign data_in = (wb) ? MemOut : DataInLatch;
     assign DataOut = data;
-    assign write = wb | (WrLatch & comp & ~validWrite);
+    // assign write = wb | (WrLatch & comp & ~validWrite);
 
     always @* begin
-        FSMErr = 0; done = 0; cHit = 0; comp = 0; latch = 0; Stall = 0; MemWr = 0;
-        MemRd = 0; wb = 0; bank = 2'b00; offset = 3'b000; nstate = state;
+        FSMErr = 0; done = 0; cHit = 0; comp = 0; latch = 0; Stall = 0; MemWr = 0; write = 0;
+        MemRd = 0; bank = 2'b00; offset = AddrLatch[2:0]; nstate = state; data_in = DataInLatch;
         case (state)
             IDLE: begin
                 nstate = (~Action | (Action & trueHit)) ? IDLE : 
@@ -125,10 +126,11 @@ module mem_system(/*AUTOARG*/
                 done = Action & trueHit;
                 cHit = Action & trueHit;
                 Stall = READ | WRITE;
+                write = Action & trueHit & WrLatch;
                 bank = 2'b00;
                 MemRd = READ;
                 MemWr = WRITE;
-                offset = 3'b000;
+                offset = (WRITE) ? 3'b000 : AddrLatch[2:0];
                 comp = 1;
                 latch = 1;
             end
@@ -170,7 +172,8 @@ module mem_system(/*AUTOARG*/
                 Stall = 1;
                 bank = 2'b10;
                 MemRd = 1;
-                wb = 1;
+                data_in = MemOut;
+                write = 1;
                 offset = 3'b000;
             end
             R_2: begin
@@ -178,19 +181,22 @@ module mem_system(/*AUTOARG*/
                 Stall = 1;
                 bank = 2'b11;
                 MemRd = 1;
-                wb = 1;
+                data_in = MemOut;
+                write = 1;
                 offset = 3'b010;
             end
             R_3: begin
                 nstate = WB_2;
                 Stall = 1;
-                wb = 1;
+                data_in = MemOut;
+                write = 1;
                 offset = 3'b100;
             end
             WB_2: begin
                 nstate = WB_3;
                 Stall = 1;
-                wb = 1;
+                data_in = MemOut;
+                write = 1;
                 offset = 3'b110;
             end
             WB_3: begin
@@ -198,6 +204,7 @@ module mem_system(/*AUTOARG*/
                 Stall = 1;
                 done = 1;
                 comp = 1;
+                write = WrLatch;
             end
             ERR: FSMErr = 1;
             default: FSMErr = 1;
