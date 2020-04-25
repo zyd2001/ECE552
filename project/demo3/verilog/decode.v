@@ -27,13 +27,13 @@ module decode (ins, wdata, regw, waddr, r1data, r2data, immediate, MemRead, MemW
     wire regErr, controlErr;
     wire sign, short; // selection input for 2 to 1 mux to choose which immediate
     wire jmp, br, jmux2, zero; // selction inputs for 2 to 1 mux that control PC update (Jump, Branch)
-    wire valid, H; // prevent halt from reset
+    // wire valid, H; // prevent halt from reset
     wire RW, MR; // original MemRead, MemWrite, RegWrite signal
     reg doBranch, branchErr;
 
-    assign RegWrite = (stall) ? 1'b0 : RW;
-    assign MemRead = (stall) ? 1'b0 : MR;
-    assign MemWrite = (stall) ? 1'b0 : MW;
+    assign RegWrite = ~stall & RW;
+    assign MemRead = ~stall & MR;
+    assign MemWrite = ~stall & MW;
 
     assign r1data = (EX_ID_forward) ? EX_ID_forward_data : r1d;
 
@@ -63,11 +63,11 @@ module decode (ins, wdata, regw, waddr, r1data, r2data, immediate, MemRead, MemW
         endcase
     end
 
-    assign Halt = H & valid;
+    // assign Halt = H & valid;
     dff reset(.q(valid), .d(1'b1), .clk(clk), .rst(rst));
 
     control controlUnit(.ins(ins[15:11]), .insFunc(ins[1:0]), .RegWrite(RW), .MemRead(MR), .MemWrite(MW), 
-        .RegWriteAddrSel(waddrM), .SignExtension(sign), .ShortImmediate(short), .Halt(H),
+        .RegWriteAddrSel(waddrM), .SignExtension(sign), .ShortImmediate(short), .Halt(Halt),
         .Jump(jmp), .Branch(br), .ALUInB(ALUInB), .ALUControl(ALUControl), 
         .WriteDataMem(WriteDataMem), .WriteDataPC(WriteDataPC), .err(controlErr), .JMux1(jmux1), .JMux2(jmux2));
     regFile_bypass regFile(.read1Data(r1d), .read2Data(r2data), .err(regErr), .clk(clk), .rst(rst), 
