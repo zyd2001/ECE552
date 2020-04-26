@@ -1,40 +1,20 @@
 module control(ins, insFunc, MemRead, MemWrite, RegWrite, RegWriteAddrSel, SignExtension, ShortImmediate, Halt,
-    Jump, Branch, JMux1, JMux2, ALUInB, ALUControl, WriteDataMem, WriteDataPC, err);
+    Jump, Branch, JMux1, JMux2, ALUInB, ALUControl, WriteDataMem, WriteDataPC, exception, RTI);
 
     localparam HALT = 5'b00000;
     localparam NOP  = 5'b00001;
 
     input [4:0] ins;
     input [1:0] insFunc;
-    output reg err;
+    output reg exception, RTI;
     output reg MemRead, MemWrite, RegWrite, SignExtension, ShortImmediate, Halt, 
         Jump, Branch, JMux1, JMux2, ALUInB, WriteDataMem, WriteDataPC;
     output reg [3:0] ALUControl;
     output reg [1:0] RegWriteAddrSel; 
 
-    // always @* begin // for ALUControl
-        
-    //     casex (ins)
-    //         // ADDI..
-    //         5'b010xx : ALUControl = {~ins[3], ins[2:0]};
-    //         // LD, ST
-    //         5'b1000x : ALUControl = 4'b0000;
-    //         5'b10011 : ALUControl = 4'b0000;
-    //         // ADD.. Shift
-    //         5'b1101x : ALUControl = {~ins[1:0], insFunc};
-    //         // SLBI
-    //         5'b10010 : ALUControl = 4'b1010;
-    //         // Shift I
-    //         // SEQ..
-    //         // BTR
-    //         // LBI
-    //         default: ALUControl = ins[3:0];
-    //     endcase
-    // end
-
     always @* begin
-        MemRead = 0; MemWrite = 0; Halt = 0; Jump = 0; Branch = 0; err = 0;
-        JMux1 = 0; JMux2 = 0;
+        MemRead = 0; MemWrite = 0; Halt = 0; Jump = 0; Branch = 0;
+        JMux1 = 0; JMux2 = 0; exception = 0; RTI = 0;
         ALUControl = ins[3:0]; // most takes ins[3:0]
         RegWrite = 1; // most write Register
         ShortImmediate = 1; // short: extension of [4:0] bits
@@ -85,7 +65,10 @@ module control(ins, insFunc, MemRead, MemWrite, RegWrite, RegWriteAddrSel, SignE
             5'b00110 : begin Jump = 1; RegWriteAddrSel = 2'b11; WriteDataPC = 1; end
             5'b00111 : begin JMux1 = 1; JMux2 = 1; Jump = 1; RegWriteAddrSel = 2'b11; WriteDataPC = 1; ShortImmediate = 0; end
 
-            default: err = 1;
+            // SIIC, RTI
+            5'b00010 : begin exception = 1; Jump = 1; RegWrite = 0; end
+            5'b00011 : begin RegWrite = 0; Jump = 1; RTI = 1; end
+            default: begin exception = 1; Jump = 1; RegWrite = 0; end
         endcase
     end
 endmodule // control
